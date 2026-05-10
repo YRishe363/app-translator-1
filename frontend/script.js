@@ -12,7 +12,7 @@ if (!text) return;
 
 result.textContent = 'מתרגם...';
 try {
-const res = await fetch('http://localhost:3001/translate', {
+const res = await fetch('/api/translate', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ text, target: target.value })
@@ -28,7 +28,7 @@ result.textContent = 'שגיאה: ' + err.message;
 
 async function loadHistory() {
     try {
-        const res = await fetch('http://localhost:3001/history');
+        const res = await fetch('/api/history');
         if (!res.ok) throw new Error('Failed to fetch history');
         const data = await res.json();
         
