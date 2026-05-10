@@ -1,0 +1,45 @@
+const btn = document.getElementById('translateBtn');
+const source = document.getElementById('source');
+const target = document.getElementById('target');
+const result = document.getElementById('result');
+const historyList = document.getElementById('history');
+
+
+btn.addEventListener('click', async () => {
+const text = source.value.trim();
+if (!text) return;
+
+
+result.textContent = 'מתרגם...';
+try {
+const res = await fetch('http://localhost:3001/translate', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ text, target: target.value })
+});
+const data = await res.json();
+result.textContent = data.translatedText;
+loadHistory();
+} catch (err) {
+result.textContent = 'שגיאה: ' + err.message;
+}
+});
+
+
+async function loadHistory() {
+    try {
+        const res = await fetch('http://localhost:3001/history');
+        if (!res.ok) throw new Error('Failed to fetch history');
+        const data = await res.json();
+        
+    
+        historyList.innerHTML = data.map(row => 
+            `<li>${row.original} → ${row.translated} (${row.target_lang})</li>`
+        ).join('');
+    } catch (err) {
+        console.error("History error:", err);
+    }
+}
+
+
+loadHistory();

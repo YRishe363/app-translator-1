@@ -14,7 +14,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -34,6 +34,10 @@ services:
 
   translator:
     image: libretranslate/libretranslate
+    container_name: translator
+    environment:
+      - LT_LOAD_ONLY=en,he
+      - LT_UPDATE_MODELS=true
     ports:
       - "5000:5000"
 

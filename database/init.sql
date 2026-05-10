@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS translations (
-  id SERIAL PRIMARY KEY,
-  original TEXT NOT NULL,
-  translated TEXT NOT NULL,
-  target_lang VARCHAR(10) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);

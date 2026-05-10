@@ -1,50 +1,52 @@
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
-const axios = require('axios');
+import express from 'express';
+import cors from 'cors';
+import fetch from 'node-fetch';
+import pkg from 'pg';
+const { Pool } = pkg;
+
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'db',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'translations',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'password',
+connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@db:5432/translations'
 });
+
+
+// פונקציית תרגום אמיתית דרך LibreTranslate API
+async function translateText(text, target) {
+try {
+const res = await fetch('http://translator:5000/translate', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ q: text, source: 'auto', target, format: 'text' })
+});
+const data = await res.json();
+return data.translatedText;
+} catch (err) {
+console.error('Translation error:', err);
+return '(שגיאה בתרגום)';
+}
+}
+
 
 app.post('/translate', async (req, res) => {
-  const { text, target } = req.body;
-  try {
-    const response = await axios.post('http://translator:5000/translate', {
-      q: text,
-      source: 'auto',
-      target: target,
-      format: 'text'
-    });
-    const translated = response.data.translatedText;
-    await pool.query(
-      'INSERT INTO translations (original, translated, target_lang) VALUES ($1, $2, $3)',
-      [text, translated, target]
-    );
-    res.json({ translated });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Translation failed' });
-  }
+const { text, target } = req.body;
+if (!text || !target) return res.status(400).json({ error: 'Missing text or target' });
+
+
+const translatedText = await translateText(text, target);
+await pool.query('INSERT INTO translations (source_text, target_lang, translated_text) VALUES ($1,$2,$3)', [text, target, translatedText]);
+res.json({ translatedText });
 });
+
 
 app.get('/history', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM translations ORDER BY id DESC LIMIT 10');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: 'DB error' });
-  }
+const r = await pool.query('SELECT source_text, translated_text FROM translations ORDER BY id DESC LIMIT 10');
+res.json(r.rows);
 });
 
-app.listen(3000, () => {
-  console.log('Backend running on port 3000');
-});
+
+app.listen(3001, () => console.log('✅ Backend running on http://localhost:3001'));

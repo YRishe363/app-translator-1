@@ -1,106 +1,28 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>אפליקציית תרגום</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #f0f0f0;
-    }
-    h1 { color: #333; text-align: center; }
-    textarea {
-      width: 100%;
-      height: 120px;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    select, button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-      font-size: 18px;
-    }
-    #history {
-      margin-top: 30px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: right;
-    }
-    th { background-color: #4CAF50; color: white; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אפליקציית תרגום</title>
 </head>
 <body>
-  <h1>🌍 אפליקציית תרגום</h1>
+<h1>אפליקציית תרגום</h1>
+<textarea id="source" rows="4" cols="40" placeholder="הקלד טקסט לתרגום..."></textarea><br>
+<select id="target">
+<option value="en">English</option>
+<option value="he">עברית</option>
+<option value="fr">Français</option>
+<option value="es">Español</option>
+</select>
+<button id="translateBtn">תרגם</button>
+<h3>תוצאה:</h3>
+<div id="result" style="border:1px solid #ccc; padding:10px; min-height:40px;"></div>
 
-  <textarea id="inputText" placeholder="הכנס טקסט לתרגום..."></textarea>
 
-  <br>
-  <select id="targetLang">
-    <option value="en">אנגלית</option>
-    <option value="fr">צרפתית</option>
-    <option value="es">ספרדית</option>
-    <option value="de">גרמנית</option>
-    <option value="ar">ערבית</option>
-  </select>
+<h3>היסטוריית תרגומים</h3>
+<ul id="history"></ul>
 
-  <button onclick="translate()">תרגם</button>
-  <button onclick="loadHistory()">הצג היסטוריה</button>
 
-  <div id="result"></div>
-
-  <div id="history"></div>
-
-  <script>
-    const BACKEND = 'http://localhost:3000';
-
-    async function translate() {
-      const text = document.getElementById('inputText').value;
-      const target = document.getElementById('targetLang').value;
-      const res = await fetch(`${BACKEND}/translate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, target })
-      });
-      const data = await res.json();
-      document.getElementById('result').innerText = '✅ תרגום: ' + data.translated;
-    }
-
-    async function loadHistory() {
-      const res = await fetch(`${BACKEND}/history`);
-      const data = await res.json();
-      let html = '<h3>היסטוריית תרגומים</h3><table><tr><th>מקור</th><th>תרגום</th><th>שפה</th></tr>';
-      data.forEach(row => {
-        html += `<tr><td>${row.original}</td><td>${row.translated}</td><td>${row.target_lang}</td></tr>`;
-      });
-      html += '</table>';
-      document.getElementById('history').innerHTML = html;
-    }
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
