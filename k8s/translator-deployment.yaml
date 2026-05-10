@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: translator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: translator
+  template:
+    metadata:
+      labels:
+        app: translator
+    spec:
+      containers:
+      - name: translator
+        image: libretranslate/libretranslate:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: LT_LOAD_ONLY
+          value: "en,he"  # יוריד רק אנגלית ועברית במקום עשרות שפות
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: translator
+spec:
+  ports:
+  - port: 5000
+  selector:
+    app: translator
