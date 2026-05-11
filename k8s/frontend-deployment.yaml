@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: app-translator-frontend # השם שנתת לאימג' בדוקר
-        imagePullPolicy: Never
+        image: yocheved363/translator-frontend:latest
         ports:
         - containerPort: 80
 ---

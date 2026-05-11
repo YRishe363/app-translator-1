@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: app-translator-backend # 
-        imagePullPolicy: Never
+        image: yocheved363/translator-backend:latest
         env:
         - name: DB_HOST
           value: db
