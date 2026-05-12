@@ -1,0 +1,23 @@
+frontend:
+  replicaCount: 1
+  image: yocheved363/translator-frontend:stable
+  pullPolicy: Always
+
+backend:
+  replicaCount: 1
+  repository: yocheved363/translator-backend
+  tag: "final-v5"
+  pullPolicy: Always
+
+# המתרגם החיצוני (LibreTranslate)
+translator:
+  image: libretranslate/libretranslate
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# בסיס הנתונים
+database:
+  user: postgres
+  password: postgres  
+  image: postgres:15-alpine
+  storageSize: 1Gi

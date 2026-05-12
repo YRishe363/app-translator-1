@@ -17,9 +17,10 @@ btn.addEventListener('click', async () => {
         });
         const data = await res.json();
         
-        // תיקון 1: שימוש ב-translated_text (עם קו תחתון) כפי שהבאקנד מחזיר
-        result.textContent = data.translatedText || data.translated_text || "שגיאה בפיענוח";
+        // הצגת התרגום
+        result.textContent = data.translatedText || "שגיאה בתרגום";
         
+        // רענון ההיסטוריה
         loadHistory();
     } catch (err) {
         result.textContent = 'שגיאה: ' + err.message;
@@ -32,13 +33,20 @@ async function loadHistory() {
         if (!res.ok) throw new Error('Failed to fetch history');
         const data = await res.json();
         
-        // תיקון 2: התאמה לשמות העמודות ב-PostgreSQL
+        // בניית רשימת ההיסטוריה עם שפות המקור והיעד
         historyList.innerHTML = data.map(row => 
-            `<li>${row.source_text} ➔ ${row.translated_text} (${row.target_lang})</li>`
+            `<li>
+                <strong>${row.source_text}</strong> 
+                <small>(${row.source_lang})</small> 
+                ➔ 
+                <strong>${row.translated_text}</strong> 
+                <small>(${row.target_lang})</small>
+            </li>`
         ).join('');
     } catch (err) {
         console.error("History error:", err);
     }
 }
 
+// טעינה ראשונית של ההיסטוריה
 loadHistory();

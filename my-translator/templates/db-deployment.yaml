@@ -14,17 +14,15 @@ spec:
     spec:
       containers:
       - name: db
-        image: postgres:alpine
+        image: {{ .Values.database.image }}
         env:
         - name: POSTGRES_DB
           value: translations
-        # כאן שינינו: במקום סיסמה קבועה, מושכים מה-Secret
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: db-credentials
               key: POSTGRES_PASSWORD
-        # הוספנו גם את המשתמש מה-Secret (חשוב לסנכרון)
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -32,15 +30,20 @@ spec:
               key: POSTGRES_USER
         ports:
         - containerPort: 5432
-        # כאן הוספנו: חיבור התיקייה בתוך הקונטיינר ל"כונן"
         volumeMounts:
         - name: db-storage
-          mountPath: /var/lib/postgresql
-      # כאן הוספנו: הגדרת ה"כונן" (Volume) שמבוסס על ה-PVC
+          mountPath: /var/lib/postgresql/data # שונה לנתיב המדויק של המידע
+        # --- השינוי כאן: הזרקת הסקריפט לאתחול הטבלה ---
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: db-storage
         persistentVolumeClaim:
           claimName: postgres-pvc
+      # --- השינוי כאן: הגדרת המקור של הסקריפט מתוך ה-ConfigMap ---
+      - name: init-script
+        configMap:
+          name: db-init-script
 ---
 apiVersion: v1
 kind: Service

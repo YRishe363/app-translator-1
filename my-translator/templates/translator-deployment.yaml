@@ -15,17 +15,19 @@ spec:
       containers:
       - name: translator
         image: libretranslate/libretranslate:latest
-        ports:
-        - containerPort: 5000
         env:
         - name: LT_LOAD_ONLY
-          value: "en,he"  # יוריד רק אנגלית ועברית במקום עשרות שפות
+          value: "en,he"
+        - name: LT_UPDATE_MODELS
+          value: "true"
+        ports:
+        - containerPort: 5000
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1000m"
 ---
 apiVersion: v1
@@ -35,5 +37,6 @@ metadata:
 spec:
   ports:
   - port: 5000
+    targetPort: 5000
   selector:
     app: translator
