@@ -18,10 +18,29 @@ spec:
         env:
         - name: POSTGRES_DB
           value: translations
+        # כאן שינינו: במקום סיסמה קבועה, מושכים מה-Secret
         - name: POSTGRES_PASSWORD
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+        # הוספנו גם את המשתמש מה-Secret (חשוב לסנכרון)
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_USER
         ports:
         - containerPort: 5432
+        # כאן הוספנו: חיבור התיקייה בתוך הקונטיינר ל"כונן"
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql
+      # כאן הוספנו: הגדרת ה"כונן" (Volume) שמבוסס על ה-PVC
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service

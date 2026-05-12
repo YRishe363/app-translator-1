@@ -14,12 +14,23 @@ spec:
     spec:
       containers:
       - name: backend
-        image: yocheved363/translator-backend:latest
+        image: yocheved363/translator-backend:v2
+        imagePullPolicy: Always
         env:
         - name: DB_HOST
-          value: db
-        - name: TRANSLATOR_URL
-          value: http://translator:5000/translate
+          value: "db"
+        - name: DB_NAME
+          value: "translator_db"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: POSTGRES_PASSWORD
         ports:
         - containerPort: 3001
 ---
@@ -28,7 +39,8 @@ kind: Service
 metadata:
   name: backend
 spec:
-  ports:
-  - port: 3001
   selector:
     app: backend
+  ports:
+  - port: 3001
+    targetPort: 3001

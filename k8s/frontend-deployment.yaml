@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: yocheved363/translator-frontend:latest
+        image: yocheved363/translator-frontend:v3
         ports:
         - containerPort: 80
 ---

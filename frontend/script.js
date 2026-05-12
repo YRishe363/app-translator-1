@@ -18,7 +18,7 @@ btn.addEventListener('click', async () => {
         const data = await res.json();
         
         // תיקון 1: שימוש ב-translated_text (עם קו תחתון) כפי שהבאקנד מחזיר
-        result.textContent = data.translated_text; 
+        result.textContent = data.translatedText || data.translated_text || "שגיאה בפיענוח";
         
         loadHistory();
     } catch (err) {

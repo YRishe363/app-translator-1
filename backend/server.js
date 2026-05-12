@@ -32,7 +32,7 @@ return '(שגיאה בתרגום)';
 }
 
 
-app.post('/translate', async (req, res) => {
+app.post('/api/translate', async (req, res) => {
 const { text, target } = req.body;
 if (!text || !target) return res.status(400).json({ error: 'Missing text or target' });
 
@@ -43,7 +43,7 @@ res.json({ translatedText });
 });
 
 
-app.get('/history', async (req, res) => {
+app.get('/api/history', async (req, res) => {
 const r = await pool.query('SELECT source_text, translated_text FROM translations ORDER BY id DESC LIMIT 10');
 res.json(r.rows);
 });
